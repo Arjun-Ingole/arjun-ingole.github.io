@@ -43,7 +43,10 @@ const { title, description, date, category = 'Writing', readTime } = metadata;
 <style>
 	:global(body) { min-height: 100vh; margin: 0; background-color: #09090b; background-image: repeating-linear-gradient(45deg, rgba(244,244,245,.03) 0 1px, transparent 1px 14px); color: #d4d4d8; }
 	.page-shell { display: flow-root; min-height: 100vh; max-width: calc(50vw + 576px); margin-inline: auto; border-inline: 1px solid rgba(39,39,42,.8); background: #09090b; }
-	.top-nav { position: sticky; top: 1rem; z-index: 30; display: flex; align-items: center; gap: .375rem; width: fit-content; margin: 1rem auto 0; padding: .72rem 1.4rem; border: 1px solid rgba(255,255,255,.15); border-radius: 1.25rem; background: rgba(39,39,42,.72); backdrop-filter: blur(24px); box-shadow: 0 12px 40px -10px rgba(0,0,0,.55), inset 0 1px rgba(255,255,255,.22); font-size: .9rem; }
+	.top-nav { position: sticky; top: 1rem; z-index: 30; display: flex; align-items: center; gap: .375rem; width: fit-content; margin: 1rem auto 0; padding: .72rem 1.4rem; overflow: hidden; border: 1px solid rgba(255,255,255,.15); border-radius: 1.25rem; background: linear-gradient(135deg, rgba(255,255,255,.13), rgba(255,255,255,.03) 55%, rgba(255,255,255,.08)); backdrop-filter: blur(40px) saturate(1.5); box-shadow: 0 12px 40px -10px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.4), inset 0 -1px 0 rgba(255,255,255,.05), inset 0 0 18px rgba(255,255,255,.04); font-size: .9rem; }
+	.top-nav::before { content: ''; position: absolute; z-index: 0; top: 0; right: 1rem; left: 1rem; height: 1px; background: linear-gradient(to right, transparent, rgba(255,255,255,.7), transparent); pointer-events: none; }
+	.top-nav::after { content: ''; position: absolute; z-index: 0; top: -1.5rem; left: -1.5rem; width: 4rem; height: 4rem; border-radius: 999px; background: rgba(255,255,255,.15); filter: blur(40px); pointer-events: none; }
+	.top-nav > * { position: relative; z-index: 1; }
 	.top-nav a { padding: .375rem .75rem; border-radius: .5rem; color: #e4e4e7; text-decoration: none; }
 	.top-nav a:hover { color: #fff; }
 	.top-nav span { width: 1px; height: .875rem; margin-inline: .25rem; background: rgba(255,255,255,.15); }
