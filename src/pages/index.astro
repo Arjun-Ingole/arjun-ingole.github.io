@@ -1,0 +1,153 @@
+---
+import '@fontsource-variable/geist';
+import '@fontsource-variable/geist-mono';
+import '@fontsource/redaction-35/400-italic.css';
+import HoverCard from '../components/HoverCard.astro';
+import squirtleImg from '../assets/squirtle.jpg';
+import fmabImg from '../assets/fmab.png';
+import { Picture } from 'astro:assets';
+import bongoCat from '../assets/bongo-cat-white.png';
+import '../styles/global.css';
+---
+
+<html lang="en" style="scroll-behavior:smooth;">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/png" href="/favicon.png" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Arjun Ingole</title>
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+		<script is:inline src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+	</head>
+	<body class="bg-zinc-950 min-h-screen" style="background-image: repeating-linear-gradient(45deg, rgba(244,244,245,0.03) 0 1px, transparent 1px 14px);">
+		<main class="relative flow-root max-w-[calc(50vw+576px)] mx-auto min-h-screen bg-zinc-950 border-x border-zinc-800/80">
+			<!-- subtle gradient rails on both sides -->
+			<div class="pointer-events-none absolute left-0 top-0 h-full w-px bg-gradient-to-b from-transparent via-zinc-600/30 to-transparent"></div>
+			<div class="pointer-events-none absolute right-0 top-0 h-full w-px bg-gradient-to-b from-transparent via-zinc-600/30 to-transparent"></div>
+
+			<!-- liquid glass rounded header -->
+			<header
+				class="sticky top-4 z-30 mx-auto mt-4 w-fit overflow-hidden rounded-[1.25rem] border border-white/15 backdrop-blur-2xl backdrop-saturate-150"
+				style="background: linear-gradient(135deg, rgba(255,255,255,0.13), rgba(255,255,255,0.03) 55%, rgba(255,255,255,0.08)); box-shadow: 0 12px 40px -10px rgba(0,0,0,0.55), inset 0 1px 0 0 rgba(255,255,255,0.40), inset 0 -1px 0 0 rgba(255,255,255,0.05), inset 0 0 18px rgba(255,255,255,0.04);"
+			>
+				<!-- refracted light blob -->
+				<div class="pointer-events-none absolute -left-6 -top-6 h-16 w-16 rounded-full bg-white/15 blur-2xl"></div>
+				<!-- specular top sheen -->
+				<div class="pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent"></div>
+
+				<div class="relative flex items-center gap-1.5 px-[1.4rem] py-[0.72rem] text-[0.9rem]">
+					<nav class="flex items-center gap-1">
+						<a href="/" class="relative rounded-lg px-3 py-1.5 text-zinc-100/90 transition hover:text-white after:absolute after:bottom-0.5 after:left-2.5 after:right-2.5 after:h-[2px] after:origin-center after:scale-x-0 after:rounded-full after:bg-[linear-gradient(90deg,#ffb3c1,#ffd6a5,#fdffb6,#caffbf,#9bf6ff,#a0c4ff,#bdb2ff)] after:transition-transform after:duration-300 hover:after:scale-x-100">Home</a>
+						<a href="/blog" class="relative rounded-lg px-3 py-1.5 text-zinc-100/90 transition hover:text-white after:absolute after:bottom-0.5 after:left-2.5 after:right-2.5 after:h-[2px] after:origin-center after:scale-x-0 after:rounded-full after:bg-[linear-gradient(90deg,#ffb3c1,#ffd6a5,#fdffb6,#caffbf,#9bf6ff,#a0c4ff,#bdb2ff)] after:transition-transform after:duration-300 hover:after:scale-x-100">Blog</a>
+					</nav>
+					<span class="mx-1 h-3.5 w-px bg-white/15"></span>
+					<a href="#contact" class="rounded-lg bg-white/10 px-3.5 py-1.5 text-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35)] transition">Contact me</a>
+				</div>
+			</header>
+
+			<h1 style="font-family: 'Redaction 35'; font-style: italic;" class="px-10 pt-24 text-[4.25rem] text-zinc-100 tracking-tight">Arjun Ingole.</h1>
+
+			<p class="px-10 pt-4 max-w-2xl text-[0.95rem] leading-relaxed text-zinc-400">hi!! i'm a <span id="age">…</span> y/o engineer with taste and questionable hobbies, based in
+				<HoverCard placement="bottom" width={320} height={320} borderWidth={7} shape="squircle" borderColor="#d4d4d8" map={{ lat: 12.9716, lng: 77.5946, zoom: 11, label: "bengaluru \u00b7 12.97\u00b0n 77.59\u00b0e" }}>
+				bengaluru
+			</HoverCard>, currently working at <HoverCard placement="bottom" width={462} height={266} borderWidth={7} shape="rounded" radius={18} borderColor="#d4d4d8" href="https://www.pazy.io/" preview={{ url: "https://www.pazy.io/", desktopWidth: 1280, desktopHeight: 720 }}>pazy</HoverCard>. i think about startups, distributed systems, and fintech more than is medically advisable, and i build random apps to cope. <a href="/slab" class="underline decoration-zinc-500/40 decoration-1 underline-offset-[3px] transition hover:decoration-zinc-300">slab</a> is the one currently holding me hostage. <HoverCard placement="bottom" width={300} height={300} borderWidth={7} shape="squircle" borderColor="#d4d4d8" href="https://www.pokemon.com/us/pokedex/squirtle" image={squirtleImg} imageAlt="Squirtle" imageFit="cover">squirtle</HoverCard> is my favorite pokemon and <HoverCard placement="bottom" width={300} height={300} borderWidth={7} shape="squircle" borderColor="#d4d4d8" href="https://www.imdb.com/title/tt1355642/" image={fmabImg} imageAlt="Fullmetal Alchemist: Brotherhood" imageFit="cover">fullmetal alchemist: brotherhood</HoverCard> is my favorite anime, in case you needed proof i peaked early. welcome to my corner of the internet.</p>
+
+			<script is:inline>
+				(function () {
+					const birth = new Date(2003, 9, 10); // 10 Oct 2003 (months are 0-indexed)
+					const now = new Date();
+					let age = now.getFullYear() - birth.getFullYear();
+					const m = now.getMonth() - birth.getMonth();
+					if (m < 0 || (m === 0 && now.getDate() < birth.getDate())) age--;
+					document.getElementById('age').textContent = age;
+				})();
+			</script>
+			<section id="contact" class="scroll-mt-24 px-10 pt-10 pb-24">
+				<div class="contact-stage">
+					<ul class="contact-list max-w-md">
+					<li>
+						<a class="contact-row" href="https://github.com/Arjun-Ingole" target="_blank" rel="noopener noreferrer">
+							<span class="contact-bullet"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg></span>
+							<span class="contact-text">Github</span>
+							<svg class="contact-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+						</a>
+					</li>
+					<li>
+						<a class="contact-row" href="https://twitter.com/ArjunIngole_" target="_blank" rel="noopener noreferrer">
+							<span class="contact-bullet"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg></span>
+							<span class="contact-text">Twitter</span>
+							<svg class="contact-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+						</a>
+					</li>
+					<li>
+						<div class="contact-row contact-mail">
+							<a class="contact-main" href="mailto:arjun0ingole@gmail.com">
+								<span class="contact-bullet"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></span>
+								<span class="contact-text">arjun0ingole@gmail.com</span>
+							</a>
+							<button class="copy-btn" data-copy="arjun0ingole@gmail.com" aria-label="Copy email">
+								<svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+								<svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+							</button>
+						</div>
+					</li>
+					<li>
+						<a class="contact-row" href="https://www.linkedin.com/in/arjuningole/" target="_blank" rel="noopener noreferrer">
+							<span class="contact-bullet"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg></span>
+							<span class="contact-text">LinkedIn</span>
+							<svg class="contact-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+						</a>
+					</li>
+					</ul>
+					<div class="bongo-wrap" id="bongoWrap">
+						<div class="doodle">
+							<span class="doodle-text">just click one of these :3</span>
+							<svg class="doodle-arrow doodle-arrow-h" width="116" height="58" viewBox="0 0 160 80" fill="none" stroke="#e7c69b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M150 54 C 126 24, 96 74, 64 42 C 44 24, 28 32, 12 42"/><path d="M12 42 L 26 31 M12 42 L 24 53"/></svg>
+							<svg class="doodle-arrow doodle-arrow-v" width="56" height="92" viewBox="0 0 80 130" fill="none" stroke="#e7c69b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M40 120 C 22 96, 58 72, 40 48 C 26 30, 38 18, 40 12"/><path d="M40 12 L 27 26 M40 12 L 53 26"/></svg>
+						</div>
+						<Picture src={bongoCat} alt="bongo cat" widths={[200,300,400]} sizes="200px" formats={['avif','webp']} class="bongo-img" />
+					</div>
+				</div>
+			</section>
+
+			<script>
+				const bongo = document.getElementById('bongoWrap');
+				const stage = document.querySelector('.contact-stage');
+				// detect whether the cat sits beside or below the links (layout, not a width guess)
+				const syncLayout = () => {
+					const ul = document.querySelector('.contact-list');
+					if (!stage || !bongo || !ul) return;
+					const sideBySide = bongo.offsetLeft >= ul.offsetLeft + ul.offsetWidth - 4;
+					stage.classList.toggle('stacked', !sideBySide);
+				};
+				syncLayout();
+				window.addEventListener('resize', syncLayout);
+				let bongoTimer;
+				const showBongo = () => {
+					if (!bongo) return;
+					bongo.classList.add('show');
+					clearTimeout(bongoTimer);
+					bongoTimer = setTimeout(() => {
+					bongo.classList.remove('show');
+					if (location.hash === '#contact') history.replaceState(null, '', location.pathname + location.search);
+				}, 10000);
+				};
+				document.querySelector('a[href="#contact"]')?.addEventListener('click', () => setTimeout(showBongo, 280));
+				if (location.hash === '#contact') showBongo();
+				document.querySelectorAll('.copy-btn').forEach((btn) => {
+					btn.addEventListener('click', async (e) => {
+						e.preventDefault();
+						e.stopPropagation();
+						const email = btn.dataset.copy;
+						try { await navigator.clipboard.writeText(email); } catch {}
+						btn.classList.add('copied');
+						clearTimeout(btn._t);
+						btn._t = setTimeout(() => btn.classList.remove('copied'), 1600);
+					});
+				});
+			</script>
+		</main>
+
+	</body>
+</html>

@@ -1,0 +1,142 @@
+---
+import '@fontsource-variable/geist';
+import '@fontsource-variable/geist-mono';
+import '@fontsource/redaction-35/400-italic.css';
+import { Picture } from 'astro:assets';
+import bongoCat from '../assets/bongo-cat-white.png';
+import '../styles/global.css';
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/png" href="/favicon.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="generator" content={Astro.generator} />
+		<title>404 · page not found</title>
+	</head>
+	<body class="err-body">
+		<div class="err-stage">
+
+			<!-- floating particles -->
+			<div class="particles">
+				{Array.from({ length: 18 }).map((_, i) => (
+					<span class="particle" style={`--d:${i * 0.7}s;--x:${(i * 53) % 100}%;--s:${(i % 3) + 1}px;--o:${0.08 + (i % 4) * 0.05}`}></span>
+				))}
+			</div>
+
+			<!-- bongo cat (left) -->
+			<Picture src={bongoCat} alt="bongo cat" widths={[200,300,400]} sizes="200px" formats={['avif','webp']} class="err-cat" />
+
+			<!-- right column: title + subtext + button -->
+			<div class="err-right">
+				<h1 class="err-title">404</h1>
+				<p class="err-sub">
+					this page doesn't exist. either it never did, or it's hiding somewhere i forgot to look.
+					the bongo cat has no idea either. it's just here for the vibes. head back before you get lost too.
+				</p>
+				<a href="/" class="err-back">
+					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+					back home
+				</a>
+			</div>
+		</div>
+
+		<style>
+			.err-body {
+				background-color: #09090b;
+				background-image: repeating-linear-gradient(45deg, rgba(244,244,245,0.03) 0 1px, transparent 1px 14px);
+				min-height: 100vh;
+				margin: 0;
+				overflow: hidden;
+				font-family: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+			}
+			.err-stage {
+				position: relative;
+				min-height: 100vh;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				justify-content: center;
+				gap: 2.75rem;
+				padding: 2rem 1.5rem;
+				box-sizing: border-box;
+			}
+			@media (max-width: 640px) {
+				.err-stage { flex-direction: column; gap: 1.75rem; text-align: left; }
+			}
+
+			.err-cat {
+				display: block; width: 210px; height: auto; flex: 0 0 auto;
+				filter: drop-shadow(0 8px 22px rgba(0,0,0,0.5));
+				animation: rise 0.7s cubic-bezier(0.22,1,0.36,1) both, bob 3s 0.7s ease-in-out infinite;
+			}
+
+			.err-right {
+				display: flex; flex-direction: column; align-items: flex-start; max-width: 30rem;
+			}
+			.err-title {
+				font-family: "Redaction 35", serif;
+				font-style: italic;
+				font-weight: 400;
+				font-size: 3.75rem;
+				line-height: 1.02;
+				letter-spacing: -0.02em;
+				margin: 0;
+				color: #fafafa;
+				background: linear-gradient(90deg, #fafafa 0%, #fafafa 40%, #fbbf24 50%, #fafafa 60%, #fafafa 100%);
+				background-size: 200% 100%;
+				-webkit-background-clip: text; background-clip: text;
+				-webkit-text-fill-color: transparent;
+				animation: shimmer 4s linear infinite, rise 0.7s 0.1s cubic-bezier(0.22,1,0.36,1) both;
+			}
+			@keyframes shimmer { to { background-position: -200% 0; } }
+
+			.err-sub {
+				margin: 0.9rem 0 0;
+				font-size: 0.92rem;
+				line-height: 1.6;
+				color: #a1a1aa;
+				animation: rise 0.7s 0.2s cubic-bezier(0.22,1,0.36,1) both;
+			}
+
+			.err-back {
+				margin-top: 1.75rem;
+				display: inline-flex; align-items: center; gap: 0.5rem;
+				padding: 0.55rem 1.25rem;
+				border: 1px solid rgba(255,255,255,0.18);
+				border-radius: 9999px;
+				background: rgba(255,255,255,0.06);
+				color: #ffffff;
+				font-size: 0.85rem;
+				text-decoration: none;
+				backdrop-filter: blur(12px);
+				transition: border-color 0.2s ease, background 0.2s ease;
+				animation: rise 0.7s 0.3s cubic-bezier(0.22,1,0.36,1) both;
+			}
+			.err-back:hover { border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.12); }
+
+			@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+			@keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+			.particles { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+			.particle {
+				position: absolute; bottom: -10px; left: var(--x);
+				width: var(--s); height: var(--s); border-radius: 9999px;
+				background: #fff; opacity: var(--o);
+				animation: float 9s var(--d) linear infinite;
+			}
+			@keyframes float {
+				0% { transform: translateY(0) scale(1); opacity: 0; }
+				10% { opacity: var(--o); }
+				90% { opacity: var(--o); }
+				100% { transform: translateY(-105vh) scale(0.6); opacity: 0; }
+			}
+
+			@media (prefers-reduced-motion: reduce) {
+				.err-cat, .err-title, .particle { animation: none; }
+				.err-title { -webkit-text-fill-color: #fafafa; }
+			}
+		</style>
+	</body>
+</html>

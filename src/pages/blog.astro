@@ -1,0 +1,111 @@
+---
+import '@fontsource-variable/geist';
+import '@fontsource/redaction-35/400-italic.css';
+import '../styles/global.css';
+
+const posts = [
+	{
+		title: '5000× faster by moving a single word',
+		date: 'Jun 20, 2026',
+		href: '/blog/5000x-faster-by-moving-a-single-word',
+	},
+];
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/png" href="/favicon.png" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Blog · Arjun Ingole</title>
+	</head>
+	<body class="min-h-screen bg-zinc-950 text-zinc-100" style="background-image: repeating-linear-gradient(45deg, rgba(244,244,245,0.03) 0 1px, transparent 1px 14px);">
+		<main class="relative flow-root mx-auto min-h-screen max-w-[calc(50vw+576px)] border-x border-zinc-800/80 bg-zinc-950">
+			<div class="pointer-events-none absolute left-0 top-0 h-full w-px bg-gradient-to-b from-transparent via-zinc-600/30 to-transparent"></div>
+			<div class="pointer-events-none absolute right-0 top-0 h-full w-px bg-gradient-to-b from-transparent via-zinc-600/30 to-transparent"></div>
+			<header
+				class="sticky top-4 z-30 mx-auto mt-4 w-fit overflow-hidden rounded-[1.25rem] border border-white/15 backdrop-blur-2xl backdrop-saturate-150"
+				style="background: linear-gradient(135deg, rgba(255,255,255,0.13), rgba(255,255,255,0.03) 55%, rgba(255,255,255,0.08)); box-shadow: 0 12px 40px -10px rgba(0,0,0,0.55), inset 0 1px 0 0 rgba(255,255,255,0.40), inset 0 -1px 0 0 rgba(255,255,255,0.05), inset 0 0 18px rgba(255,255,255,0.04);"
+			>
+				<div class="pointer-events-none absolute -left-6 -top-6 h-16 w-16 rounded-full bg-white/15 blur-2xl"></div>
+				<div class="pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent"></div>
+				<nav class="relative flex items-center gap-1.5 px-[1.4rem] py-[0.72rem] text-[0.9rem]">
+					<a href="/" class="relative rounded-lg px-3 py-1.5 text-zinc-100/90 transition hover:text-white after:absolute after:bottom-0.5 after:left-2.5 after:right-2.5 after:h-[2px] after:origin-center after:scale-x-0 after:rounded-full after:bg-[linear-gradient(90deg,#ffb3c1,#ffd6a5,#fdffb6,#caffbf,#9bf6ff,#a0c4ff,#bdb2ff)] after:transition-transform after:duration-300 hover:after:scale-x-100">Home</a>
+					<a href="/blog" aria-current="page" class="relative rounded-lg px-3 py-1.5 text-white after:absolute after:bottom-0.5 after:left-2.5 after:right-2.5 after:h-[2px] after:rounded-full after:bg-white/45">Blog</a>
+					<span class="mx-1 h-3.5 w-px bg-white/15"></span>
+					<a href="/#contact" class="rounded-lg bg-white/10 px-3.5 py-1.5 text-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35)] transition hover:bg-white/15">Contact me</a>
+				</nav>
+			</header>
+
+			<div class="blog-content">
+				<header class="mb-14">
+					<h1 class="blog-title">Writings.</h1>
+				</header>
+
+				<ul class="blog-list" aria-label="Blog posts">
+					{posts.map((post) => (
+						<li class="group blog-row">
+							<a class="blog-link" href={post.href ?? '#'}>
+								<h2 class="cursor-pointer text-lg font-medium tracking-tight text-zinc-200 transition group-hover:text-white sm:text-xl">{post.title}</h2>
+								<svg class="shrink-0 text-zinc-600 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-zinc-300" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+							</a>
+							<time class="blog-date">{post.date}</time>
+						</li>
+					))}
+				</ul>
+			</div>
+		</main>
+	</body>
+</html>
+
+<style>
+	.blog-content {
+		max-width: 56rem;
+		margin-inline: auto;
+		padding: 6rem 2.5rem;
+	}
+	.blog-title {
+		font-family: 'Redaction 35', serif;
+		font-size: 2.6rem;
+		font-style: italic;
+		font-weight: 400;
+		line-height: 1.02;
+		letter-spacing: -0.02em;
+		color: #fafafa;
+		background: linear-gradient(90deg, #fafafa 0%, #fafafa 40%, #fbbf24 50%, #fafafa 60%, #fafafa 100%);
+		background-size: 200% 100%;
+		-webkit-background-clip: text;
+		background-clip: text;
+		-webkit-text-fill-color: transparent;
+		animation: shimmer 4s linear infinite, rise 0.7s 0.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+	}
+	@keyframes shimmer { to { background-position: -200% 0; } }
+	@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+	.blog-list {
+		max-width: 48rem;
+		border-top: 1px solid rgb(39 39 42 / 0.9);
+	}
+	.blog-row {
+		padding-block: 1.75rem;
+		border-bottom: 1px solid rgb(39 39 42 / 0.9);
+	}
+	.blog-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.625rem;
+	}
+	.blog-date {
+		display: block;
+		margin-top: 0.4rem;
+		font-size: 0.7rem;
+		color: #71717a;
+	}
+	@media (max-width: 639px) {
+		.blog-content { padding: 6rem 1.5rem; }
+		.blog-row { padding-block: 1.5rem; }
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.blog-title { animation: none; -webkit-text-fill-color: #fafafa; }
+	}
+</style>

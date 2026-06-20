@@ -1,0 +1,353 @@
+---
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+/**
+ * HoverCard — reusable squircle popover that opens on hover over underlined text.
+ *
+ *   <HoverCard map={{ lat: 12.9716, lng: 77.5946, zoom: 11, label: 'bengaluru · 12.97°n 77.59°e' }}>
+ *     bengaluru
+ *   </HoverCard>
+ *
+ * The card is a true squircle (superellipse n=5) with a thick border ring that
+ * never clips (two stacked squircle masks). Enter/exit get a subtle rotate +
+ * bouncy scale. Maps lazy-init on first hover and show an Apple-Maps-style
+ * pulsing blue dot.
+ *
+ * For non-map cards, set `card` to a raw HTML string (rendered inside the squircle).
+ */
+interface MapConfig {
+  lat: number;
+  lng: number;
+  zoom?: number;
+  label?: string;
+}
+interface PreviewConfig {
+  url: string;
+  desktopWidth?: number;
+  desktopHeight?: number;
+}
+interface Props {
+  placement?: 'top' | 'bottom';
+  width?: number;
+  height?: number;
+  borderWidth?: number;
+  borderColor?: string;
+  gap?: number;
+  shape?: 'squircle' | 'rounded';
+  radius?: number;
+  href?: string;
+  map?: MapConfig;
+  preview?: PreviewConfig;
+  image?: ImageMetadata;
+  imageAlt?: string;
+  imageFit?: 'cover' | 'contain';
+  card?: string;
+}
+const {
+  placement = 'top',
+  width = 380,
+  height = 250,
+  borderWidth = 7,
+  borderColor = '#d4d4d8',
+  gap = 12,
+  shape = 'squircle',
+  radius = 22,
+  href,
+  map,
+  preview,
+  image,
+  imageAlt = '',
+  imageFit = 'cover',
+  card,
+} = Astro.props;
+
+// desktop-scale math: render the site at a real desktop viewport, then shrink
+// it to fit the inner card so you see the full desktop layout, not a mobile one
+const dw = preview?.desktopWidth ?? 1280;
+const dh = preview?.desktopHeight ?? 820;
+const innerW = width - 2 * borderWidth;
+const innerH = height - 2 * borderWidth;
+const scale = Math.min(innerW / dw, innerH / dh);
+
+const SQ_PATH =
+  'M200,100 L199.66,144.29 L198.62,158.24 L196.88,168.1 L194.41,175.79 L191.16,181.99 L187.06,187.06 L181.99,191.16 L175.79,194.41 L168.1,196.88 L158.24,198.62 L144.29,199.66 L100,200 L55.71,199.66 L41.76,198.62 L31.9,196.88 L24.21,194.41 L18.01,191.16 L12.94,187.06 L8.84,181.99 L5.59,175.79 L3.12,168.1 L1.38,158.24 L0.34,144.29 L0,100 L0.34,55.71 L1.38,41.76 L3.12,31.9 L5.59,24.21 L8.84,18.01 L12.94,12.94 L18.01,8.84 L24.21,5.59 L31.9,3.12 L41.76,1.38 L55.71,0.34 L100,0 L144.29,0.34 L158.24,1.38 L168.1,3.12 L175.79,5.59 L181.99,8.84 L187.06,12.94 L191.16,18.01 L194.41,24.21 L196.88,31.9 L198.62,41.76 L199.66,55.71 Z';
+const SQ_MASK =
+  `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' preserveAspectRatio='none'%3E%3Cpath d='${encodeURIComponent(SQ_PATH)}' fill='white'/%3E%3C/svg%3E")`;
+const uid = 'hc' + Math.random().toString(36).slice(2, 8);
+const mapId = `map-${uid}`;
+---
+
+<span class:list={['hc', uid]} data-hc data-placement={placement} data-shape={shape}>
+      {href
+        ? <a class="hc-trigger" href={href} target="_blank" rel="noopener noreferrer"><slot /></a>
+        : <span class="hc-trigger"><slot /></span>}
+
+  <span class="hc-pos" style={`--w:${width}px;--h:${height}px;--gap:${gap}px;`}>
+    <span class="hc-anim" aria-hidden="true"
+      style={`--bw:${borderWidth}px;--bc:${borderColor};--mask:${SQ_MASK};--radius:${radius}px;`}>
+      {shape === 'squircle' && <span class="hc-border"></span>}
+      <span class="hc-inner">
+        {map && <span class="hc-map" id={mapId} data-map data-lat={map.lat} data-lng={map.lng} data-zoom={map.zoom ?? 11}></span>}
+        {map?.label && <span class="hc-caption" set:html={map.label} />}
+        {preview && (
+          <span class="hc-preview" style={`--dw:${dw}px;--dh:${dh}px;--scale:${scale};`}>
+            <iframe data-iframe-src={preview.url} title="preview" loading="lazy" referrerpolicy="no-referrer"></iframe>
+          </span>
+        )}
+        {image && (
+          <Picture src={image} alt={imageAlt} widths={[240, 360, 480, 640]} sizes="320px" formats={['avif', 'webp']} loading="lazy" class={`hc-img hc-img-${imageFit}`} />
+        )}
+        {!map && !preview && !image && card && <span class="hc-cardhtml" set:html={card} />}
+      </span>
+    </span>
+  </span>
+</span>
+
+<style>
+  .hc { position: relative; display: inline-block; }
+  .hc-trigger {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: rgba(255, 255, 255, 0.35);
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1.5px;
+    cursor: help;
+    transition: text-decoration-color 0.2s ease;
+  }
+  a.hc-trigger { cursor: pointer; }
+  .hc:hover .hc-trigger { text-decoration-color: rgba(255, 255, 255, 0.75); }
+
+  /* positioning layer — handles only placement, never animated (no transform fight) */
+  .hc-pos {
+    position: absolute;
+    left: 50%;
+    width: var(--w);
+    height: var(--h);
+    transform: translateX(-50%);
+    pointer-events: none;
+    z-index: 50;
+  }
+  .hc[data-placement='top'] .hc-pos { bottom: calc(100% + var(--gap)); }
+  .hc[data-placement='bottom'] .hc-pos { top: calc(100% + var(--gap)); }
+  .hc-pos.open { pointer-events: auto; }
+
+  /* animation layer — only scale / rotate / opacity */
+  .hc-anim {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transform: scale(0.92) rotate(-1deg);
+    transform-origin: center bottom;
+  }
+  .hc[data-placement='bottom'] .hc-anim { transform-origin: center top; transform: scale(0.92) rotate(1deg); }
+
+  /* ---- squircle shape (default): two stacked superellipse masks ---- */
+  .hc-border {
+    position: absolute; inset: 0;
+    background: var(--bc);
+    -webkit-mask-image: var(--mask); mask-image: var(--mask);
+    -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+    filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.45));
+  }
+  .hc[data-shape='squircle'] .hc-inner {
+    position: absolute; inset: var(--bw);
+    overflow: hidden;
+    -webkit-mask-image: var(--mask); mask-image: var(--mask);
+    -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+    background: #0b0b0b;
+  }
+  /* ---- rounded shape: real CSS border + border-radius (never clips) ---- */
+  .hc[data-shape='rounded'] .hc-inner {
+    position: absolute; inset: 0;
+    border: var(--bw) solid var(--bc);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: #0b0b0b;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+  }
+  .hc-map { display: block; width: 100%; height: 100%; }
+  .hc-img { display: block; width: 100%; height: 100%; }
+  .hc-img-cover { object-fit: cover; }
+  .hc-img-contain { object-fit: contain; background: #0b0b0b; }
+  .hc-cardhtml { display: block; width: 100%; height: 100%; }
+  .hc-cardhtml iframe { display: block; width: 100%; height: 100%; border: 0; background: #0b0b0b; }
+  /* desktop preview: render at desktop size, scale down to fit the squircle */
+  .hc-preview { position: absolute; inset: 0; overflow: hidden; }
+  .hc-preview iframe { display: block; width: var(--dw); height: var(--dh); border: 0; background: #fff; transform: scale(var(--scale)); transform-origin: top left; }
+  .hc-caption {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.6rem; letter-spacing: 0.05em;
+    color: #d4d4d8;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.72), transparent);
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  /* enter: gentle scale-up with a tiny overshoot + barely-there rotate */
+  @keyframes hc-in {
+    0%   { opacity: 0; transform: scale(0.92) rotate(-1deg); }
+    60%  { opacity: 1; transform: scale(1.015) rotate(0.3deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0deg); }
+  }
+  @keyframes hc-in-b {
+    0%   { opacity: 0; transform: scale(0.92) rotate(1deg); }
+    60%  { opacity: 1; transform: scale(1.015) rotate(-0.3deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0deg); }
+  }
+  /* exit: soft fade + slight settle, minimal rotation */
+  @keyframes hc-out {
+    0%   { opacity: 1; transform: scale(1) rotate(0deg); }
+    100% { opacity: 0; transform: scale(0.94) rotate(0.6deg); }
+  }
+  @keyframes hc-out-b {
+    0%   { opacity: 1; transform: scale(1) rotate(0deg); }
+    100% { opacity: 0; transform: scale(0.94) rotate(-0.6deg); }
+  }
+  .hc-anim.is-show { animation: hc-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .hc-anim.is-hide { animation: hc-out 0.26s cubic-bezier(0.4, 0, 0.2, 1) both; }
+  .hc[data-placement='bottom'] .hc-anim.is-show { animation-name: hc-in-b; }
+  .hc[data-placement='bottom'] .hc-anim.is-hide { animation-name: hc-out-b; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hc-anim.is-show, .hc-anim.is-hide { animation: none; }
+    .hc-anim.is-show { opacity: 1; transform: none; }
+    .hc-anim.is-hide { opacity: 0; }
+  }
+</style>
+
+<script>
+  function initHoverCards() {
+    document.querySelectorAll('[data-hc]').forEach((root) => {
+      if ((root as HTMLElement).dataset.hcReady) return;
+      (root as HTMLElement).dataset.hcReady = '1';
+      const anim = root.querySelector('.hc-anim') as HTMLElement | null;
+      if (!anim) return;
+      const mapEl = root.querySelector('[data-map]') as HTMLElement | null;
+      let mapReady = false;
+      let hideTimer: number | undefined;
+
+      const pos = root.querySelector('.hc-pos') as HTMLElement | null;
+      const trig = root.querySelector('.hc-trigger') as HTMLElement | null;
+      const M = 12; // viewport margin
+      let isOpen = false;
+
+      // position the popover with viewport clamping (fixed, so it never clips)
+      const place = () => {
+        if (!pos || !trig) return;
+        const r = trig.getBoundingClientRect();
+        const vw = window.innerWidth, vh = window.innerHeight;
+        const cw = pos.offsetWidth, ch = pos.offsetHeight;
+        const gap = 12;
+        // vertical: prefer below; flip above if it would overflow the bottom
+        const belowTop = r.bottom + gap;
+        const fitBelow = belowTop + ch <= vh - M;
+        let top = fitBelow ? belowTop : r.top - gap - ch;
+        top = Math.max(M, Math.min(top, vh - M - ch));
+        // horizontal: centre on the trigger, clamped to the viewport
+        let left = r.left + r.width / 2 - cw / 2;
+        left = Math.max(M, Math.min(left, vw - M - cw));
+        pos.style.position = 'fixed';
+        pos.style.left = left + 'px';
+        pos.style.top = top + 'px';
+        pos.style.bottom = 'auto';
+        pos.style.right = 'auto';
+        pos.style.transform = 'none';
+        // keep the animation transform-origin matching the chosen side
+        root.dataset.placement = fitBelow ? 'bottom' : 'top';
+      };
+
+      const show = () => {
+        if (hideTimer) { clearTimeout(hideTimer); hideTimer = undefined; }
+        place();
+        anim.classList.remove('is-hide');
+        anim.classList.add('is-show');
+        pos?.classList.add('open');
+        isOpen = true;
+        if (mapEl && !mapReady) { initMap(mapEl); mapReady = true; }
+        const m = (window as any).__hcMaps?.get(mapEl);
+        if (m) setTimeout(() => m.invalidateSize(), 120);
+        // lazy-load any preview iframes (data-iframe-src → src on first show)
+        root.querySelectorAll('iframe[data-iframe-src]').forEach((f) => {
+          const el = f as HTMLIFrameElement;
+          if (!el.src) el.src = el.dataset.iframeSrc || '';
+        });
+      };
+      const hide = () => {
+        if (hideTimer) clearTimeout(hideTimer);
+        hideTimer = window.setTimeout(() => {
+          anim.classList.remove('is-show');
+          anim.classList.add('is-hide');
+          pos?.classList.remove('open');
+          isOpen = false;
+        }, 160);
+      };
+      // listen on both the trigger and the card so crossing the gap keeps it open
+      [root, pos].forEach((el) => {
+        if (!el) return;
+        el.addEventListener('mouseenter', show);
+        el.addEventListener('mouseleave', hide);
+      });
+      // keep it clamped while open if the viewport changes / user scrolls
+      window.addEventListener('scroll', () => { if (isOpen) place(); }, { passive: true });
+      window.addEventListener('resize', () => { if (isOpen) place(); }, { passive: true });
+    });
+  }
+
+  function initMap(el: HTMLElement) {
+    const L = (window as any).L;
+    if (!L) return;
+    const lat = parseFloat(el.dataset.lat || '0');
+    const lng = parseFloat(el.dataset.lng || '0');
+    const zoom = parseInt(el.dataset.zoom || '11', 10);
+    const map = L.map(el, {
+      zoomControl: false, attributionControl: false, scrollWheelZoom: false,
+      dragging: false, touchZoom: false, doubleClickZoom: false,
+      boxZoom: false, keyboard: false,
+    }).setView([lat, lng], zoom);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      maxZoom: 19, subdomains: 'abcd',
+    }).addTo(map);
+    L.marker([lat, lng], {
+      interactive: false,
+      icon: L.divIcon({
+        className: 'hc-pin',
+        html: '<span class="hc-ring"></span><span class="hc-dot"></span>',
+        iconSize: [16, 16], iconAnchor: [8, 8],
+      }),
+    }).addTo(map);
+    (window as any).__hcMaps = (window as any).__hcMaps || new Map();
+    (window as any).__hcMaps.set(el, map);
+    setTimeout(() => map.invalidateSize(), 150);
+  }
+
+  document.addEventListener('astro:page-load', initHoverCards);
+  initHoverCards();
+</script>
+
+<style is:global>
+  .hc-pin { position: relative; width: 16px; height: 16px; }
+  .hc-pin .hc-dot {
+    position: absolute; left: 50%; top: 50%;
+    width: 14px; height: 14px; border-radius: 9999px;
+    background: #1a8cff; transform: translate(-50%, -50%);
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.95), 0 0 12px 3px rgba(26,140,255,0.75);
+    z-index: 2;
+  }
+  .hc-pin .hc-ring {
+    position: absolute; left: 50%; top: 50%;
+    width: 14px; height: 14px; border-radius: 9999px;
+    border: 2px solid rgba(26,140,255,0.7);
+    transform: translate(-50%, -50%);
+    animation: hc-pulse 2.2s ease-out infinite; z-index: 1;
+  }
+  @keyframes hc-pulse {
+    0%   { transform: translate(-50%,-50%) scale(1); opacity: 0.8; }
+    80%  { opacity: 0; }
+    100% { transform: translate(-50%,-50%) scale(4.6); opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { .hc-pin .hc-ring { animation: none; opacity: 0; } }
+  .leaflet-container { background: #eef2f0; }
+</style>

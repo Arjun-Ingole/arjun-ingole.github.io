@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+@theme {
+	--font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+	--font-mono: "Geist Mono Variable", ui-monospace, SFMono-Regular, monospace;
+}
+
+body {
+	font-family: var(--font-sans);
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+}
+
+/* hide scrollbars but keep scrolling */
+html {
+	scrollbar-width: none;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+	width: 0;
+	height: 0;
+	display: none;
+}
+/* ---- contact links section (in global so it always applies) ---- */
+/* ---- contact links: borderless, compact ---- */
+.contact-list { list-style: none; margin: 0; padding: 0; }
+.contact-list li { margin: 0; }
+.contact-list li + li .contact-row { margin-top: 0.3rem; }
+.contact-row {
+	display: flex; align-items: center; gap: 0.7rem;
+	padding: 0.25rem 0;
+	text-decoration: none; color: inherit;
+	transition: color .25s ease;
+}
+.contact-row:hover { color: #ffffff; }
+.contact-bullet { display: flex; align-items: center; justify-content: center; width: 18px; height: 18px; color: #71717a; transition: color .25s ease; flex: 0 0 auto; }
+.contact-bullet svg { width: 18px; height: 18px; display: block; }
+.contact-row:hover .contact-bullet { color: #fafafa; }
+.contact-text { color: #d4d4d8; font-size: 0.92rem; }
+.contact-row:hover .contact-text { color: #ffffff; }
+.contact-arrow { width: 13px; height: 13px; flex: 0 0 auto; color: #52525b; opacity: 0; transform: translateX(-4px); transition: opacity .25s ease, transform .25s ease; }
+.contact-row:hover .contact-arrow { opacity: 1; transform: translateX(0); }
+.contact-mail { justify-content: flex-start; }
+.contact-main { display: flex; align-items: center; gap: 0.7rem; text-decoration: none; color: inherit; }
+.copy-btn {
+	position: relative; display: flex; align-items: center; justify-content: center;
+	width: 26px; height: 26px; border-radius: 0.4rem; flex: 0 0 auto;
+	border: none; background: transparent;
+	color: #71717a; cursor: pointer;
+	transition: color .25s ease;
+}
+.copy-btn:hover { color: #ffffff; }
+.copy-btn svg { width: 15px; height: 15px; }
+.copy-btn .check-icon { display: none; }
+.copy-btn.copied .copy-icon { display: none; }
+.copy-btn.copied .check-icon { display: block; color: #4ade80; }
+
+/* ---- bongo cat easter egg (image, on the right) ---- */
+.contact-stage { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+.bongo-wrap {
+	display: flex; align-items: center; gap: 0.5rem;
+	opacity: 0; transform: translateX(12px) scale(0.9);
+	transition: opacity .5s ease, transform .5s cubic-bezier(0.22,1,0.36,1);
+	pointer-events: none;
+}
+.bongo-wrap.show { opacity: 1; transform: none; pointer-events: auto; }
+.bongo-wrap.hide { opacity: 0; transform: translateX(12px) scale(0.94); }
+.bongo-img { display: block; width: 200px; height: auto; flex: 0 0 auto; filter: drop-shadow(0 8px 18px rgba(0,0,0,0.45)); }
+.doodle { display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem; }
+.doodle-text { font-size: 0.78rem; color: #e7c69b; font-style: italic; white-space: nowrap; }
+.doodle-arrow { display: block; flex: 0 0 auto; }
+.doodle-arrow-v { display: none; }
+.bongo-wrap.show .doodle-arrow { animation: doodle-wiggle 2.6s ease-in-out infinite; }
+@keyframes doodle-wiggle {
+	0%,100% { transform: rotate(-2deg); }
+	50% { transform: rotate(2deg); }
+}
+/* stacked: cat wrapped below the links → arrow points UP at them (toggled by JS, not a breakpoint).
+   bongo-wrap stays a row so its width never changes (no flip-flop at the wrap boundary) */
+.contact-stage.stacked .doodle { align-items: center; order: -1; }
+.contact-stage.stacked .doodle-arrow-h { display: none; }
+.contact-stage.stacked .doodle-arrow-v { display: block; order: -1; }   /* arrow on top, closest to the links */
+@media (prefers-reduced-motion: reduce) { .doodle-arrow { animation: none; } }

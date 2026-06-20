@@ -1,0 +1,164 @@
+---
+import '@fontsource-variable/geist';
+import '@fontsource-variable/geist-mono';
+import '@fontsource/redaction-35/400-italic.css';
+import '../styles/global.css';
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/png" href="/favicon.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="generator" content={Astro.generator} />
+		<title>slab — work in progress</title>
+	</head>
+	<body class="slab-body">
+		<div class="slab-stage">
+
+			<!-- floating particles -->
+			<div class="particles">
+				{Array.from({ length: 18 }).map((_, i) => (
+					<span class="particle" style={`--d:${i * 0.7}s;--x:${(i * 53) % 100}%;--s:${(i % 3) + 1}px;--o:${0.08 + (i % 4) * 0.05}`}></span>
+				))}
+			</div>
+
+			<!-- right column: title + subtext stacked, button below -->
+			<div class="slab-right">
+				<h1 class="wip-title">Work in Progress</h1>
+				<p class="slab-sub">
+					slab is still holding me hostage and refusing to ship. i'm building it between
+					shower thoughts and random apps i make to cope. check back before i space out again.
+					or don't, it'll probably still be a work in progress.
+				</p>
+				<a href="/" class="slab-back">
+					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+					back home
+				</a>
+			</div>
+		</div>
+
+		<style>
+			.slab-body {
+				background-color: #09090b;
+				background-image: repeating-linear-gradient(45deg, rgba(244,244,245,0.03) 0 1px, transparent 1px 14px);
+				min-height: 100vh;
+				margin: 0;
+				overflow: hidden;
+				font-family: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+			}
+
+			/* ---- stage: orb on the left, text column on the right ---- */
+			.slab-stage {
+				position: relative;
+				min-height: 100vh;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				justify-content: center;
+				gap: 2.75rem;
+				padding: 2rem 1.5rem;
+				box-sizing: border-box;
+			}
+			@media (max-width: 640px) {
+				.slab-stage { flex-direction: column; gap: 1.75rem; text-align: left; }
+			}
+
+			.slab-right {
+				display: flex;
+				flex-direction: column;
+				align-items: flex-start;
+				max-width: 30rem;
+			}
+
+			/* ---- title (Redaction 35 italic, just under the name size) ---- */
+			.wip-title {
+				font-family: "Redaction 35", serif;
+				font-style: italic;
+				font-weight: 400;
+				font-size: 2.6rem; /* a little smaller */
+				line-height: 1.02;
+				letter-spacing: -0.02em;
+				margin: 0;
+				color: #fafafa;
+				background: linear-gradient(90deg, #fafafa 0%, #fafafa 40%, #fbbf24 50%, #fafafa 60%, #fafafa 100%);
+				background-size: 200% 100%;
+				-webkit-background-clip: text;
+				background-clip: text;
+				-webkit-text-fill-color: transparent;
+				animation: shimmer 4s linear infinite;
+			}
+			@keyframes shimmer { to { background-position: -200% 0; } }
+
+			.slab-sub {
+				margin: 0.9rem 0 0;
+				font-size: 0.92rem;
+				line-height: 1.6;
+				color: #a1a1aa;
+			}
+			.slab-sub .mono { font-family: "Geist Mono Variable", ui-monospace, monospace; color: #d4d4d8; }
+
+			/* ---- back button (explicitly light so it's visible on black) ---- */
+			.slab-back {
+				margin-top: 1.75rem;
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5rem;
+				padding: 0.55rem 1.25rem;
+				border: 1px solid rgba(255,255,255,0.18);
+				border-radius: 9999px;
+				background: rgba(255,255,255,0.06);
+				color: #ffffff;               /* <-- white, visible on black */
+				font-size: 0.85rem;
+				text-decoration: none;
+				backdrop-filter: blur(12px);
+				transition: border-color 0.2s ease, background 0.2s ease;
+			}
+			.slab-back:hover { border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.12); }
+
+			/* ---- orb ---- */
+			.orb-wrap { position: relative; width: 130px; height: 130px; flex: 0 0 auto; animation: rise 0.7s cubic-bezier(0.22,1,0.36,1) both; }
+			.orb {
+				position: absolute; inset: 0; border-radius: 9999px;
+				background: conic-gradient(from 0deg, transparent 0%, rgba(251,191,36,0) 20%, #fbbf24 45%, #fb7185 65%, #a78bfa 85%, transparent 100%);
+				-webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px));
+				mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px));
+				animation: spin 1.6s linear infinite;
+			}
+			.orb-core {
+				position: absolute; inset: 36px; border-radius: 9999px;
+				background: radial-gradient(circle at 35% 30%, #fff7ed, #fbbf24 40%, #b45309 100%);
+				box-shadow: 0 0 26px 5px rgba(251,191,36,0.5), inset 0 0 12px rgba(255,255,255,0.4);
+				animation: pulse 2.2s ease-in-out infinite;
+			}
+			@keyframes spin { to { transform: rotate(360deg); } }
+			@keyframes pulse { 0%,100% { transform: scale(1); opacity: 0.95; } 50% { transform: scale(1.12); opacity: 1; } }
+
+			@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+			.orb-wrap { animation: rise 0.7s cubic-bezier(0.22,1,0.36,1) both; }
+			.wip-title { animation: shimmer 4s linear infinite, rise 0.7s 0.1s cubic-bezier(0.22,1,0.36,1) both; }
+			.slab-sub { animation: rise 0.7s 0.2s cubic-bezier(0.22,1,0.36,1) both; }
+			.slab-back { animation: rise 0.7s 0.3s cubic-bezier(0.22,1,0.36,1) both; }
+
+			/* ---- particles ---- */
+			.particles { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+			.particle {
+				position: absolute; bottom: -10px; left: var(--x);
+				width: var(--s); height: var(--s); border-radius: 9999px;
+				background: #fff; opacity: var(--o);
+				animation: float 9s var(--d) linear infinite;
+			}
+			@keyframes float {
+				0% { transform: translateY(0) scale(1); opacity: 0; }
+				10% { opacity: var(--o); }
+				90% { opacity: var(--o); }
+				100% { transform: translateY(-105vh) scale(0.6); opacity: 0; }
+			}
+
+			@media (prefers-reduced-motion: reduce) {
+				.orb, .orb-core, .wip-title, .particle { animation: none; }
+				.wip-title { -webkit-text-fill-color: #fafafa; }
+			}
+		</style>
+	</body>
+</html>
