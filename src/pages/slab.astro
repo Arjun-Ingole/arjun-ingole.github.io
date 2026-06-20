@@ -3,6 +3,7 @@ import '@fontsource-variable/geist';
 import '@fontsource-variable/geist-mono';
 import '@fontsource/redaction-35/400-italic.css';
 import '../styles/global.css';
+import Analytics from '../components/Analytics.astro';
 ---
 
 <html lang="en">
@@ -11,6 +12,7 @@ import '../styles/global.css';
 		<link rel="icon" type="image/png" href="/favicon.png" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="generator" content={Astro.generator} />
+		<Analytics />
 		<title>slab — work in progress</title>
 	</head>
 	<body class="slab-body">

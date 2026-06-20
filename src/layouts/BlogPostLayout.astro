@@ -3,6 +3,7 @@ import '@fontsource-variable/geist';
 import '@fontsource-variable/geist-mono';
 import '@fontsource/redaction-35/400-italic.css';
 import '../styles/global.css';
+import Analytics from '../components/Analytics.astro';
 
 const metadata = Astro.props.frontmatter ?? Astro.props;
 const { title, description, date, category = 'Writing', readTime } = metadata;
@@ -13,6 +14,7 @@ const { title, description, date, category = 'Writing', readTime } = metadata;
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/png" href="/favicon.png" />
 		<meta name="viewport" content="width=device-width" />
+		<Analytics />
 		<title>{title} · Arjun Ingole</title>
 	</head>
 	<body>
