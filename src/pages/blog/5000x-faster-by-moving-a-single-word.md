@@ -6,7 +6,7 @@ category: Engineering
 readTime: 9 min read
 ---
 
-a list view on our platform was taking around a minute to load when applied a certain kind of filter, naturally, my instinct was that something was wrong with the query aint no way the application logic is doing so much work pg_stat_activity suggested the same. at the first glance what I saw was the query was scanning through a large table filtering via attributes stored in a JSONB column, ahh yes that's the culprit right there, time to add new columns migrate the data and call it done, well i wish it was that simple. the problem was something worse
+a list view on our platform was taking around a minute to load when applied a certain kind of filter, naturally, my instinct was that something was wrong with the query aint no way the application logic is doing so much work <mark>pg_stat_activity</mark> suggested the same. at the first glance what I saw was the query was scanning through a large table filtering via attributes stored in a JSONB column, ahh yes that's the culprit right there, time to add new columns migrate the data and call it done, well i wish it was that simple. the problem was something worse
 
 ### Understanding how SQL works
 

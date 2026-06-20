@@ -73,6 +73,7 @@ const { title, description, date, category = 'Writing', readTime } = metadata;
 	.prose :global(blockquote p) { margin: 0; }
 	.prose :global(a) { color: #e4e4e7; text-decoration: underline; text-decoration-color: #52525b; text-underline-offset: 3px; }
 	.prose :global(strong) { color: #e4e4e7; font-weight: 600; }
+	.prose :global(mark) { padding: .05em .2em; border-radius: .2em; background: rgba(251,191,36,.2); color: #fde68a; }
 	.prose :global(:not(pre) > code) { padding: .15rem .35rem; border: 1px solid #3f3f46; border-radius: .3rem; background: #18181b; color: #e4e4e7; font-family: 'Geist Mono Variable', monospace; font-size: .85em; }
 	.prose :global(.astro-code) { overflow-x: auto; margin: 2rem 0; padding: 1.25rem; border: 1px solid #27272a; border-radius: .8rem; font-family: 'Geist Mono Variable', monospace; font-size: .82rem; line-height: 1.65; }
 	.prose :global(table) { width: 100%; margin: 2rem 0; border-collapse: collapse; table-layout: fixed; font-size: .75rem; line-height: 1.45; }
