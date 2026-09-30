@@ -1,0 +1,47 @@
+---
+import {
+	siGo, siTypescript, siJavascript, siRust, siPostgresql, siBun, siFlutter, siDart,
+	siKotlin, siPython, siVuedotjs, siGooglechrome, siGnubash, siAndroid, siFirebase,
+	siNodedotjs, siApple, siAstro, siC,
+} from 'simple-icons';
+import type { Tech } from '../data/site';
+// simple-icons' postgres is a line drawing that turns to mush at 13px — use the
+// official filled elephant (devicon, MIT) when showing brand colour
+import postgresFull from '../assets/icons/postgresql.svg?raw';
+
+interface Props {
+	tech: Tech;
+	size?: number;
+	/** render in brand colour instead of currentColor */
+	brand?: boolean;
+	class?: string;
+}
+
+const map: Record<Tech, { path: string; hex: string; title: string }> = {
+	go: siGo, ts: siTypescript, js: siJavascript, rust: siRust, postgres: siPostgresql,
+	bun: siBun, flutter: siFlutter, dart: siDart, kotlin: siKotlin, python: siPython,
+	vue: siVuedotjs, chrome: siGooglechrome, bash: siGnubash, android: siAndroid,
+	firebase: siFirebase, node: siNodedotjs, macos: siApple, astro: siAstro, c: siC,
+};
+
+const { tech, size = 14, brand = false, class: cls } = Astro.props;
+const icon = map[tech];
+// monochrome brands (rust, bun, apple) read as black — keep them on currentColor
+const mono = ['000000', '181717'].includes(icon.hex);
+const fill = brand && !mono ? `#${icon.hex}` : 'currentColor';
+const full = brand && tech === 'postgres'
+	? postgresFull.replace('<svg ', `<svg class="tech-icon${cls ? ' ' + cls : ''}" width="${size}" height="${size}" role="img" aria-label="${icon.title}" `)
+	: null;
+---
+
+{full ? <Fragment set:html={full} /> : (
+<svg
+	class:list={['tech-icon', cls]}
+	width={size}
+	height={size}
+	viewBox="0 0 24 24"
+	fill={fill}
+	role="img"
+	aria-label={icon.title}
+><title>{icon.title}</title><path d={icon.path} /></svg>
+)}

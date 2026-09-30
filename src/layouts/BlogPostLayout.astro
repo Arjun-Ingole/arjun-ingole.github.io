@@ -1,88 +1,59 @@
 ---
-import '@fontsource-variable/geist';
-import '@fontsource-variable/geist-mono';
-import '@fontsource/redaction-35/400-italic.css';
-import '../styles/global.css';
-import Analytics from '../components/Analytics.astro';
+import Base from './Base.astro';
+import { fmtDate } from '../lib/posts';
 
 const metadata = Astro.props.frontmatter ?? Astro.props;
-const { title, description, date, category = 'Writing', readTime } = metadata;
+const { title, description, date, readTime } = metadata;
+const d = new Date(date);
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/png" href="/favicon.png" />
-		<meta name="viewport" content="width=device-width" />
-		<Analytics />
-		<title>{title} · Arjun Ingole</title>
-	</head>
-	<body>
-		<div class="page-shell">
-			<nav class="top-nav">
-				<a href="/">Home</a>
-				<a href="/blog">Blog</a>
-				<span></span>
-				<a class="contact" href="/#contact">Contact me</a>
-			</nav>
-
-			<main>
-				<a class="back" href="/blog">← All writings</a>
-				<article>
-					<header class="article-header">
-						<p class="eyebrow">{category}{readTime && ` · ${readTime}`}</p>
-						<h1>{title}</h1>
-						{description && <p class="dek">{description}</p>}
-						<time>{date}</time>
-					</header>
-					<div class="prose"><slot /></div>
-				</article>
-			</main>
-		</div>
-	</body>
-</html>
+<Base title={title} description={description} ogType="article">
+	<article>
+		<header class="head">
+			<a class="back" href="/blog">← Writing</a>
+			<h1>{title}</h1>
+			<p class="meta">
+				<time datetime={isNaN(+d) ? undefined : d.toISOString()}>{isNaN(+d) ? date : fmtDate(d, 'long')}</time>
+				{readTime && <span> · {readTime}</span>}
+			</p>
+		</header>
+		<div class="prose"><slot /></div>
+	</article>
+</Base>
 
 <style>
-	:global(body) { min-height: 100vh; margin: 0; background-color: #09090b; background-image: repeating-linear-gradient(45deg, rgba(244,244,245,.03) 0 1px, transparent 1px 14px); color: #d4d4d8; }
-	.page-shell { display: flow-root; min-height: 100vh; max-width: calc(50vw + 576px); margin-inline: auto; border-inline: 1px solid rgba(39,39,42,.8); background: #09090b; }
-	.top-nav { position: sticky; top: 1rem; z-index: 30; display: flex; align-items: center; gap: .375rem; width: fit-content; margin: 1rem auto 0; padding: .72rem 1.4rem; overflow: hidden; border: 1px solid rgba(255,255,255,.15); border-radius: 1.25rem; background: linear-gradient(135deg, rgba(255,255,255,.13), rgba(255,255,255,.03) 55%, rgba(255,255,255,.08)); backdrop-filter: blur(40px) saturate(1.5); box-shadow: 0 12px 40px -10px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.4), inset 0 -1px 0 rgba(255,255,255,.05), inset 0 0 18px rgba(255,255,255,.04); font-size: .9rem; }
-	.top-nav::before { content: ''; position: absolute; z-index: 0; top: 0; right: 1rem; left: 1rem; height: 1px; background: linear-gradient(to right, transparent, rgba(255,255,255,.7), transparent); pointer-events: none; }
-	.top-nav::after { content: ''; position: absolute; z-index: 0; top: -1.5rem; left: -1.5rem; width: 4rem; height: 4rem; border-radius: 999px; background: rgba(255,255,255,.15); filter: blur(40px); pointer-events: none; }
-	.top-nav > * { position: relative; z-index: 1; }
-	.top-nav a { padding: .375rem .75rem; border-radius: .5rem; color: #e4e4e7; text-decoration: none; }
-	.top-nav a:hover { color: #fff; }
-	.top-nav span { width: 1px; height: .875rem; margin-inline: .25rem; background: rgba(255,255,255,.15); }
-	.top-nav .contact { background: rgba(255,255,255,.1); color: #fff; }
-	main { max-width: 46rem; margin: 0 auto; padding: 5rem 1.5rem 8rem; }
-	.back { display: inline-block; margin-bottom: 3.5rem; color: #71717a; font-size: .8rem; text-decoration: none; }
-	.back:hover { color: #d4d4d8; }
-	.article-header { padding-bottom: 2.5rem; border-bottom: 1px solid #27272a; }
-	.eyebrow { margin: 0 0 1rem; color: #a1a1aa; font-family: 'Geist Mono Variable', monospace; font-size: .72rem; text-transform: uppercase; letter-spacing: .12em; }
-	h1 { max-width: 42rem; margin: 0; color: #fafafa; font-family: 'Redaction 35', serif; font-size: clamp(2.175rem, 7vw, 3.875rem); font-style: italic; font-weight: 400; line-height: .98; letter-spacing: -.025em; }
-	.dek { max-width: 36rem; margin: 1.25rem 0; color: #a1a1aa; font-size: 1.05rem; line-height: 1.6; }
-	time { color: #71717a; font-size: .75rem; }
-	.prose { padding-top: 2.75rem; font-size: 1rem; line-height: 1.8; }
-	.prose :global(p) { margin: 0 0 1.5rem; }
-	.prose :global(p:first-child) { color: #e4e4e7; font-size: 1.15rem; line-height: 1.7; }
-	.prose :global(h2) { margin: 3rem 0 1rem; color: #f4f4f5; font-size: 1.55rem; font-weight: 500; letter-spacing: -.02em; }
-	.prose :global(h3) { margin: 3rem 0 1rem; color: #f4f4f5; font-size: 1.4rem; font-weight: 500; line-height: 1.3; letter-spacing: -.02em; }
-	.prose :global(h4) { margin: 2.25rem 0 .75rem; color: #e4e4e7; font-size: 1.1rem; font-weight: 500; }
-	.prose :global(ul), .prose :global(ol) { margin: 0 0 1.75rem; padding-left: 1.25rem; }
+	.head { margin-bottom: 2rem; }
+	.back { display: inline-block; margin-bottom: 1.5rem; color: var(--ink-3); text-decoration: none; transition: color .15s ease; }
+	.back:hover { color: var(--ink); }
+	h1 { margin: 0; font-size: 1.25rem; font-weight: 500; line-height: 1.35; letter-spacing: -.01em; text-wrap: balance; }
+	.meta { margin: .35rem 0 0; color: var(--ink-3); }
+
+	.prose { font-size: 15px; line-height: 1.75; color: var(--ink-2); text-wrap: pretty; }
+	.prose :global(p) { margin: 0 0 1.25rem; }
+	.prose :global(h2), .prose :global(h3), .prose :global(h4) { margin: 2.25rem 0 .75rem; color: var(--ink); font-size: 15px; font-weight: 500; }
+	.prose :global(ul), .prose :global(ol) { margin: 0 0 1.25rem; padding-left: 1.25rem; }
 	.prose :global(ul) { list-style: disc; }
 	.prose :global(ol) { list-style: decimal; }
-	.prose :global(li) { margin: .5rem 0; padding-left: .35rem; }
-	.prose :global(blockquote) { margin: 2.5rem 0; padding: .25rem 0 .25rem 1.5rem; border-left: 2px solid #fbbf24; color: #e4e4e7; font-family: 'Redaction 35', serif; font-size: 1.55rem; font-style: italic; line-height: 1.45; }
+	.prose :global(li) { margin: .35rem 0; padding-left: .25rem; }
+	.prose :global(li::marker) { color: var(--ink-3); }
+	.prose :global(blockquote) { margin: 1.5rem 0; padding-left: 1rem; border-left: 2px solid var(--line); color: var(--ink); }
 	.prose :global(blockquote p) { margin: 0; }
-	.prose :global(a) { color: #e4e4e7; text-decoration: underline; text-decoration-color: #52525b; text-underline-offset: 3px; }
-	.prose :global(strong) { color: #e4e4e7; font-weight: 600; }
-	.prose :global(mark) { padding: .05em .2em; border-radius: .2em; background: rgba(251,191,36,.2); color: #fde68a; }
-	.prose :global(:not(pre) > code) { padding: .15rem .35rem; border: 1px solid #3f3f46; border-radius: .3rem; background: #18181b; color: #e4e4e7; font-family: 'Geist Mono Variable', monospace; font-size: .85em; }
-	.prose :global(.astro-code) { overflow-x: auto; margin: 2rem 0; padding: 1.25rem; border: 1px solid #27272a; border-radius: .8rem; font-family: 'Geist Mono Variable', monospace; font-size: .82rem; line-height: 1.65; }
-	.prose :global(table) { width: 100%; margin: 2rem 0; border-collapse: collapse; table-layout: fixed; font-size: .75rem; line-height: 1.45; }
-	.prose :global(thead) { color: #f4f4f5; background: rgba(255,255,255,.035); }
-	.prose :global(th), .prose :global(td) { padding: .55rem .65rem; border: 1px solid #3f3f46; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+	.prose :global(a) { color: var(--ink); text-decoration: underline; text-decoration-color: var(--ink-3); text-underline-offset: 3px; }
+	.prose :global(a:hover) { text-decoration-color: var(--ink); }
+	.prose :global(strong) { color: var(--ink); font-weight: 500; }
+	.prose :global(mark), .prose :global(:not(pre) > code) {
+		padding: .1rem .3rem; border: 1px solid var(--line); border-radius: .3rem;
+		background: var(--hover); color: var(--ink); font-family: var(--font-mono); font-size: .85em;
+	}
+	.prose :global(.astro-code) {
+		overflow-x: auto; margin: 1.5rem 0; padding: 1rem 1.1rem;
+		border: 1px solid var(--line); border-radius: .5rem;
+		font-family: var(--font-mono); font-size: 12.5px; line-height: 1.65;
+	}
+	.prose :global(table) { width: 100%; margin: 1.5rem 0; border-collapse: collapse; table-layout: fixed; font-size: 12.5px; line-height: 1.45; }
+	.prose :global(th), .prose :global(td) { padding: .5rem .6rem; border: 1px solid var(--line); text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+	.prose :global(th) { color: var(--ink); font-weight: 500; background: var(--hover); }
 	.prose :global(th:first-child), .prose :global(td:first-child) { width: 28%; }
-	.prose :global(th) { font-weight: 500; }
-	.prose :global(hr) { margin: 3.5rem 0; border: 0; border-top: 1px solid #27272a; }
-	@media (max-width: 520px) { .top-nav { padding-inline: .7rem; } .top-nav a { padding-inline: .55rem; } main { padding-top: 3.5rem; } }
+	.prose :global(hr) { margin: 2.5rem 0; border: 0; border-top: 1px solid var(--line); }
+	.prose :global(img) { max-width: 100%; border-radius: .5rem; }
 </style>

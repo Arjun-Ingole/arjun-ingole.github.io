@@ -76,46 +76,19 @@ const SQ_MASK =
 const uid = 'hc' + Math.random().toString(36).slice(2, 8);
 const mapId = `map-${uid}`;
 ---
-
-<span class:list={['hc', uid]} data-hc data-placement={placement} data-shape={shape}>
-      {href
-        ? <a class="hc-trigger" href={href} target="_blank" rel="noopener noreferrer"><slot /></a>
-        : <span class="hc-trigger"><slot /></span>}
-
-  <span class="hc-pos" style={`--w:${width}px;--h:${height}px;--gap:${gap}px;`}>
-    <span class="hc-anim" aria-hidden="true"
-      style={`--bw:${borderWidth}px;--bc:${borderColor};--mask:${SQ_MASK};--radius:${radius}px;`}>
-      {shape === 'squircle' && <span class="hc-border"></span>}
-      <span class="hc-inner">
-        {map && <span class="hc-map" id={mapId} data-map data-lat={map.lat} data-lng={map.lng} data-zoom={map.zoom ?? 11}></span>}
-        {map?.label && <span class="hc-caption" set:html={map.label} />}
-        {preview && (
-          <span class="hc-preview" style={`--dw:${dw}px;--dh:${dh}px;--scale:${scale};`}>
-            <iframe data-iframe-src={preview.url} title="preview" loading="lazy" referrerpolicy="no-referrer"></iframe>
-          </span>
-        )}
-        {image && (
-          <Picture src={image} alt={imageAlt} widths={[240, 360, 480, 640]} sizes="320px" formats={['avif', 'webp']} loading="lazy" class={`hc-img hc-img-${imageFit}`} />
-        )}
-        {!map && !preview && !image && card && <span class="hc-cardhtml" set:html={card} />}
-      </span>
-    </span>
-  </span>
-</span>
-
 <style>
-  .hc { position: relative; display: inline-block; }
+  .hc { position: relative; display: inline; }
   .hc-trigger {
-    color: inherit;
     text-decoration: underline;
-    text-decoration-color: rgba(255, 255, 255, 0.35);
+    text-decoration-color: var(--line-strong);
     text-underline-offset: 3px;
     text-decoration-thickness: 1.5px;
+    color: var(--ink);
     cursor: help;
     transition: text-decoration-color 0.2s ease;
   }
   a.hc-trigger { cursor: pointer; }
-  .hc:hover .hc-trigger { text-decoration-color: rgba(255, 255, 255, 0.75); }
+  .hc:hover .hc-trigger { text-decoration-color: var(--accent); }
 
   /* positioning layer — handles only placement, never animated (no transform fight) */
   .hc-pos {
@@ -124,6 +97,7 @@ const mapId = `map-${uid}`;
     width: var(--w);
     height: var(--h);
     transform: translateX(-50%);
+    max-width: calc(100vw - 24px);
     pointer-events: none;
     z-index: 50;
   }
@@ -178,7 +152,8 @@ const mapId = `map-${uid}`;
   .hc-preview iframe { display: block; width: var(--dw); height: var(--dh); border: 0; background: #fff; transform: scale(var(--scale)); transform-origin: top left; }
   .hc-caption {
     position: absolute; left: 0; right: 0; bottom: 0;
-    padding: 0.3rem 0.6rem;
+    padding: 0.9rem 1.25rem 0.45rem;
+    text-align: center;
     font-size: 0.6rem; letter-spacing: 0.05em;
     color: #d4d4d8;
     background: linear-gradient(to top, rgba(0, 0, 0, 0.72), transparent);
@@ -268,7 +243,7 @@ const mapId = `map-${uid}`;
         isOpen = true;
         if (mapEl && !mapReady) { initMap(mapEl); mapReady = true; }
         const m = (window as any).__hcMaps?.get(mapEl);
-        if (m) setTimeout(() => m.invalidateSize(), 120);
+        if (m) requestAnimationFrame(() => m.resize());
         // lazy-load any preview iframes (data-iframe-src → src on first show)
         root.querySelectorAll('iframe[data-iframe-src]').forEach((f) => {
           const el = f as HTMLIFrameElement;
@@ -296,31 +271,44 @@ const mapId = `map-${uid}`;
     });
   }
 
-  function initMap(el: HTMLElement) {
-    const L = (window as any).L;
-    if (!L) return;
-    const lat = parseFloat(el.dataset.lat || '0');
-    const lng = parseFloat(el.dataset.lng || '0');
-    const zoom = parseInt(el.dataset.zoom || '11', 10);
-    const map = L.map(el, {
-      zoomControl: false, attributionControl: false, scrollWheelZoom: false,
-      dragging: false, touchZoom: false, doubleClickZoom: false,
-      boxZoom: false, keyboard: false,
-    }).setView([lat, lng], zoom);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      maxZoom: 19, subdomains: 'abcd',
-    }).addTo(map);
-    L.marker([lat, lng], {
+  // vector maps: MapLibre + OpenFreeMap (keyless, crisp at any DPR, real dark style).
+  // the ~250kB library is only fetched the first time someone hovers a map card.
+  const ML = 'https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl';
+  let mlLoad: Promise<any> | undefined;
+  const loadMapLibre = () => mlLoad ??= new Promise((resolve, reject) => {
+    const css = document.createElement('link');
+    css.rel = 'stylesheet'; css.href = `${ML}.css`;
+    document.head.append(css);
+    const js = document.createElement('script');
+    js.src = `${ML}.js`; js.async = true;
+    js.onload = () => resolve((window as any).maplibregl);
+    js.onerror = reject;
+    document.head.append(js);
+  });
+  const mapStyle = () => `https://tiles.openfreemap.org/styles/${document.documentElement.dataset.theme === 'dark' ? 'dark' : 'positron'}`;
+
+  async function initMap(el: HTMLElement) {
+    let maplibregl: any;
+    try { maplibregl = await loadMapLibre(); } catch { return; }
+    const center: [number, number] = [parseFloat(el.dataset.lng || '0'), parseFloat(el.dataset.lat || '0')];
+    const map = new maplibregl.Map({
+      container: el,
+      style: mapStyle(),
+      center,
+      zoom: parseFloat(el.dataset.zoom || '11'),
       interactive: false,
-      icon: L.divIcon({
-        className: 'hc-pin',
-        html: '<span class="hc-ring"></span><span class="hc-dot"></span>',
-        iconSize: [16, 16], iconAnchor: [8, 8],
-      }),
-    }).addTo(map);
+      attributionControl: false,
+      fadeDuration: 0,
+    });
+    const pin = document.createElement('span');
+    pin.className = 'hc-pin';
+    pin.innerHTML = '<span class="hc-ring"></span><span class="hc-dot"></span>';
+    new maplibregl.Marker({ element: pin, anchor: 'center' }).setLngLat(center).addTo(map);
+    map.once('load', () => el.classList.add('is-ready'));
+    // follow the site theme
+    new MutationObserver(() => map.setStyle(mapStyle())).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
     (window as any).__hcMaps = (window as any).__hcMaps || new Map();
     (window as any).__hcMaps.set(el, map);
-    setTimeout(() => map.invalidateSize(), 150);
   }
 
   document.addEventListener('astro:page-load', initHoverCards);
@@ -349,5 +337,31 @@ const mapId = `map-${uid}`;
     100% { transform: translate(-50%,-50%) scale(4.6); opacity: 0; }
   }
   @media (prefers-reduced-motion: reduce) { .hc-pin .hc-ring { animation: none; opacity: 0; } }
-  .leaflet-container { background: #eef2f0; }
+  /* map canvas fades in once the style has loaded; bg matches positron / dark */
+  .hc-map { background: #f0ebe2; }
+  [data-theme='dark'] .hc-map { background: #121212; }
+  .hc-map .maplibregl-canvas { opacity: 0; transition: opacity .35s ease; }
+  .hc-map.is-ready .maplibregl-canvas { opacity: 1; }
 </style>
+
+<span class:list={['hc', uid]} data-hc data-placement={placement} data-shape={shape}>{href
+        ? <a class="hc-trigger" href={href} {...(href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}><slot /></a>
+        : <span class="hc-trigger"><slot /></span>}<span class="hc-pos" style={`--w:${width}px;--h:${height}px;--gap:${gap}px;`}>
+    <span class="hc-anim" aria-hidden="true"
+      style={`--bw:${borderWidth}px;--bc:${borderColor};--mask:${SQ_MASK};--radius:${radius}px;`}>
+      {shape === 'squircle' && <span class="hc-border"></span>}
+      <span class="hc-inner">
+        {map && <span class="hc-map" id={mapId} data-map data-lat={map.lat} data-lng={map.lng} data-zoom={map.zoom ?? 11}></span>}
+        {map?.label && <span class="hc-caption" set:html={map.label} />}
+        {preview && (
+          <span class="hc-preview" style={`--dw:${dw}px;--dh:${dh}px;--scale:${scale};`}>
+            <iframe data-iframe-src={preview.url} title="preview" loading="lazy" referrerpolicy="no-referrer"></iframe>
+          </span>
+        )}
+        {image && (
+          <Picture src={image} alt={imageAlt} widths={[240, 360, 480, 640]} sizes="320px" formats={['avif', 'webp']} loading="lazy" class={`hc-img hc-img-${imageFit}`} />
+        )}
+        {!map && !preview && !image && card && <span class="hc-cardhtml" set:html={card} />}
+      </span>
+    </span>
+  </span></span>

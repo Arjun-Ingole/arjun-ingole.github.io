@@ -1,0 +1,47 @@
+---
+import { siGithub, siX } from 'simple-icons';
+import { links, site } from '../data/site';
+---
+
+<footer class="foot rise" style="--d:900ms">
+	<nav class="socials" aria-label="Elsewhere">
+		<a href={links.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+			<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d={siGithub.path}/></svg>
+		</a>
+		<span class="sep" aria-hidden="true"></span>
+		<a href={links.x} target="_blank" rel="noopener noreferrer" aria-label="X">
+			<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d={siX.path}/></svg>
+		</a>
+		<span class="sep" aria-hidden="true"></span>
+		<a href={links.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+			<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.125 2.062 2.062 0 0 1 0 4.125zM7.119 20.452H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+		</a>
+		<span class="sep" aria-hidden="true"></span>
+		<a href="/rss.xml" aria-label="RSS">
+			<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+		</a>
+	</nav>
+	<span class="where">{site.city}, <span data-time>--:--</span></span>
+</footer>
+
+<style>
+	.foot {
+		display: flex; align-items: center; justify-content: space-between;
+		margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid var(--line);
+	}
+	.socials { display: flex; align-items: center; gap: .75rem; }
+	.socials a { display: inline-flex; color: var(--ink-2); transition: color .15s ease; }
+	.socials a:hover { color: var(--ink); }
+	.sep { width: 1px; height: 12px; background: var(--line); }
+	.where { color: var(--ink-3); font-variant-numeric: tabular-nums; }
+</style>
+
+<script>
+	const el = document.querySelector('[data-time]');
+	if (el) {
+		const fmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: false });
+		const tick = () => { el.textContent = fmt.format(new Date()); };
+		tick();
+		setInterval(tick, 15_000);
+	}
+</script>

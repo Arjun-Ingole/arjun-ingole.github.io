@@ -7,7 +7,7 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   site: 'https://arjun-ingole.github.io',
   markdown: {
-    shikiConfig: { theme: 'houston' }
+    shikiConfig: { themes: { light: 'github-light', dark: 'houston' } }
   },
   vite: {
     plugins: [tailwindcss()]

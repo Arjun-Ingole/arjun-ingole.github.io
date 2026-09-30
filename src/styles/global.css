@@ -3,83 +3,89 @@
 @theme {
 	--font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
 	--font-mono: "Geist Mono Variable", ui-monospace, SFMono-Regular, monospace;
+	--font-display: "Redaction 35", Georgia, serif;
 }
 
+:root {
+	--col: 36rem;
+	--bg: #f4efe6;
+	--ink: #1f1b16;
+	--ink-2: #6e665b;
+	--ink-3: #a59c8e;
+	--line: #e3dccf;
+	--hover: rgb(92 64 24 / 0.05);
+	/* used by the hover cards */
+	--line-strong: var(--ink-3);
+	--accent: var(--ink);
+	color-scheme: light;
+}
+:root[data-theme="dark"] {
+	--bg: #0b0b0b;
+	--ink: #ededed;
+	--ink-2: #8f8f8f;
+	--ink-3: #555555;
+	--line: #1d1d1d;
+	--hover: rgb(255 255 255 / 0.04);
+	color-scheme: dark;
+}
+
+@view-transition { navigation: auto; }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: .2s; }
+html.theme-vt::view-transition-old(root), html.theme-vt::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+
+html { background: var(--bg); overflow-x: clip; }
 body {
+	margin: 0;
+	min-height: 100vh;
+	background: var(--bg);
+	color: var(--ink);
 	font-family: var(--font-sans);
+	font-size: 14px;
+	line-height: 1.6;
 	-webkit-font-smoothing: antialiased;
 	text-rendering: optimizeLegibility;
 }
+::selection { background: var(--ink); color: var(--bg); }
+:focus-visible { outline: 1.5px solid var(--ink); outline-offset: 2px; border-radius: 3px; }
 
-/* hide scrollbars but keep scrolling */
-html {
-	scrollbar-width: none;
-	overflow-x: clip;
-}
-body { overflow-x: clip; }
-html::-webkit-scrollbar,
-body::-webkit-scrollbar {
-	width: 0;
-	height: 0;
-	display: none;
-}
-/* ---- contact links section (in global so it always applies) ---- */
-/* ---- contact links: borderless, compact ---- */
-.contact-list { list-style: none; margin: 0; padding: 0; }
-.contact-list li { margin: 0; }
-.contact-list li + li .contact-row { margin-top: 0.3rem; }
-.contact-row {
-	display: flex; align-items: center; gap: 0.7rem;
-	padding: 0.25rem 0;
-	text-decoration: none; color: inherit;
-	transition: color .25s ease;
-}
-.contact-row:hover { color: #ffffff; }
-.contact-bullet { display: flex; align-items: center; justify-content: center; width: 18px; height: 18px; color: #71717a; transition: color .25s ease; flex: 0 0 auto; }
-.contact-bullet svg { width: 18px; height: 18px; display: block; }
-.contact-row:hover .contact-bullet { color: #fafafa; }
-.contact-text { color: #d4d4d8; font-size: 0.92rem; }
-.contact-row:hover .contact-text { color: #ffffff; }
-.contact-arrow { width: 13px; height: 13px; flex: 0 0 auto; color: #52525b; opacity: 0; transform: translateX(-4px); transition: opacity .25s ease, transform .25s ease; }
-.contact-row:hover .contact-arrow { opacity: 1; transform: translateX(0); }
-.contact-mail { justify-content: flex-start; }
-.contact-main { display: flex; align-items: center; gap: 0.7rem; text-decoration: none; color: inherit; }
-.copy-btn {
-	position: relative; display: flex; align-items: center; justify-content: center;
-	width: 26px; height: 26px; border-radius: 0.4rem; flex: 0 0 auto;
-	border: none; background: transparent;
-	color: #71717a; cursor: pointer;
-	transition: color .25s ease;
-}
-.copy-btn:hover { color: #ffffff; }
-.copy-btn svg { width: 15px; height: 15px; }
-.copy-btn .check-icon { display: none; }
-.copy-btn.copied .copy-icon { display: none; }
-.copy-btn.copied .check-icon { display: block; color: #4ade80; }
+.display { font-family: var(--font-display); font-style: italic; font-weight: 400; }
 
-/* ---- bongo cat easter egg (image, on the right) ---- */
-.contact-stage { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
-.bongo-wrap {
-	display: flex; align-items: center; gap: 0.5rem;
-	opacity: 0; transform: translateX(12px) scale(0.9);
-	transition: opacity .5s ease, transform .5s cubic-bezier(0.22,1,0.36,1);
-	pointer-events: none;
+/* a plain underlined link inside prose */
+.ul {
+	color: var(--ink);
+	text-decoration: underline;
+	text-decoration-color: var(--ink-3);
+	text-decoration-thickness: 1px;
+	text-underline-offset: 3px;
+	transition: text-decoration-color .15s ease;
 }
-.bongo-wrap.show { opacity: 1; transform: none; pointer-events: auto; }
-.bongo-wrap.hide { opacity: 0; transform: translateX(12px) scale(0.94); }
-.bongo-img { display: block; width: 200px; height: auto; flex: 0 0 auto; filter: drop-shadow(0 8px 18px rgba(0,0,0,0.45)); }
-.doodle { display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem; }
-.doodle-text { font-size: 0.78rem; color: #e7c69b; font-style: italic; white-space: nowrap; }
-.doodle-arrow { display: block; flex: 0 0 auto; }
-.doodle-arrow-v { display: none; }
-.bongo-wrap.show .doodle-arrow { animation: doodle-wiggle 2.6s ease-in-out infinite; }
-@keyframes doodle-wiggle {
-	0%,100% { transform: rotate(-2deg); }
-	50% { transform: rotate(2deg); }
+.ul:hover { text-decoration-color: var(--ink); }
+
+/* staggered entrance: every direct child of .stagger rises in turn.
+   `backwards` fill so nothing lingers after it finishes (a leftover
+   transform/filter would trap the position:fixed hover cards). */
+.rise, .stagger > * {
+	animation: rise .8s cubic-bezier(.22, 1, .36, 1) backwards;
+	animation-delay: calc(var(--d, 0ms) + var(--n, 0) * 70ms);
 }
-/* stacked: cat wrapped below the links → arrow points UP at them (toggled by JS, not a breakpoint).
-   bongo-wrap stays a row so its width never changes (no flip-flop at the wrap boundary) */
-.contact-stage.stacked .doodle { align-items: center; order: -1; }
-.contact-stage.stacked .doodle-arrow-h { display: none; }
-.contact-stage.stacked .doodle-arrow-v { display: block; order: -1; }   /* arrow on top, closest to the links */
-@media (prefers-reduced-motion: reduce) { .doodle-arrow { animation: none; } }
+.stagger > :nth-child(1) { --n: 0; }  .stagger > :nth-child(2) { --n: 1; }
+.stagger > :nth-child(3) { --n: 2; }  .stagger > :nth-child(4) { --n: 3; }
+.stagger > :nth-child(5) { --n: 4; }  .stagger > :nth-child(6) { --n: 5; }
+.stagger > :nth-child(7) { --n: 6; }  .stagger > :nth-child(8) { --n: 7; }
+.stagger > :nth-child(9) { --n: 8; }  .stagger > :nth-child(n+10) { --n: 9; }
+@keyframes rise {
+	from { opacity: 0; transform: translateY(10px); filter: blur(5px); }
+}
+@media (prefers-reduced-motion: reduce) {
+	.rise, .stagger > * { animation: none; }
+	@view-transition { navigation: none; }
+}
+
+/* dual-theme code blocks: shiki writes light inline, dark into --shiki-dark */
+[data-theme="dark"] .astro-code,
+[data-theme="dark"] .astro-code span {
+	color: var(--shiki-dark) !important;
+	background-color: var(--shiki-dark-bg) !important;
+	font-style: var(--shiki-dark-font-style) !important;
+	font-weight: var(--shiki-dark-font-weight) !important;
+}

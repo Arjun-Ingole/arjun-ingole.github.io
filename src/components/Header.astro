@@ -1,0 +1,78 @@
+---
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const onBlog = path.startsWith('/blog');
+---
+
+<header class="top rise">
+	<a href="/" class="logo" aria-label="Arjun Ingole — home">
+		<svg class="toaster" viewBox="0 0 28 28" width="24" height="24" aria-hidden="true">
+			<g class="slice s1"><path d="M6.5 15V8.2A3.2 3.2 0 0 1 9.7 5h.6a3.2 3.2 0 0 1 3.2 3.2V15z" /></g>
+			<g class="slice s2"><path d="M14.5 15V8.2A3.2 3.2 0 0 1 17.7 5h.6a3.2 3.2 0 0 1 3.2 3.2V15z" /></g>
+			<rect class="body" x="3" y="12" width="22" height="12.5" rx="4" />
+			<circle class="face" cx="11" cy="17.2" r="1" />
+			<circle class="face" cx="17" cy="17.2" r="1" />
+			<path class="face-line" d="M12.3 20.1q1.7 1.3 3.4 0" />
+		</svg>
+	</a>
+
+	<nav class="nav" aria-label="primary">
+		<a href="/blog" aria-current={onBlog ? 'page' : undefined}>Writing</a>
+		<button class="theme" type="button" aria-label="Toggle theme" data-theme-toggle>
+			<svg class="sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+			<svg class="moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+		</button>
+	</nav>
+</header>
+
+<style>
+	.top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2.5rem; }
+
+	.logo { display: inline-flex; color: var(--ink); }
+	.toaster { overflow: visible; }
+	.toaster .body { fill: var(--ink); }
+	.toaster .face { fill: var(--bg); }
+	.toaster .face-line { fill: none; stroke: var(--bg); stroke-width: 1.2; stroke-linecap: round; }
+	.toaster .slice { fill: var(--ink-2); transition: transform .45s cubic-bezier(.34,1.56,.64,1); }
+	.logo:hover .s1 { transform: translateY(-3px); }
+	.logo:hover .s2 { transform: translateY(-5px); transition-delay: .04s; }
+
+	.nav { display: flex; align-items: center; gap: .75rem; }
+	.nav a { color: var(--ink-2); text-decoration: none; transition: color .15s ease; }
+	.nav a:hover, .nav a[aria-current='page'] { color: var(--ink); }
+	.theme {
+		display: grid; place-items: center; width: 1.75rem; height: 1.75rem; margin-right: -.35rem;
+		border: 0; border-radius: .4rem; background: transparent; color: var(--ink-2); cursor: pointer;
+		transition: color .15s ease, background-color .15s ease;
+	}
+	.theme:hover { color: var(--ink); background: var(--hover); }
+	.theme svg { grid-area: 1 / 1; transition: transform .35s ease, opacity .2s ease; }
+	:global([data-theme='dark']) .theme .sun,
+	:global([data-theme='light']) .theme .moon { opacity: 0; transform: scale(.6); }
+</style>
+
+<script>
+	const btn = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+	btn?.addEventListener('click', () => {
+		const root = document.documentElement;
+		const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+		const apply = () => {
+			root.dataset.theme = next;
+			try { localStorage.setItem('theme', next); } catch {}
+		};
+		const vt = (document as any).startViewTransition;
+		if (!vt || matchMedia('(prefers-reduced-motion: reduce)').matches) return apply();
+		// circular reveal from the button
+		const r = btn.getBoundingClientRect();
+		const x = r.left + r.width / 2, y = r.top + r.height / 2;
+		const end = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+		root.classList.add('theme-vt');
+		const t = vt.call(document, apply);
+		t.finished.finally(() => root.classList.remove('theme-vt'));
+		t.ready.then(() => {
+			root.animate(
+				{ clipPath: [`circle(0 at ${x}px ${y}px)`, `circle(${end}px at ${x}px ${y}px)`] },
+				{ duration: 450, easing: 'cubic-bezier(.22,1,.36,1)', pseudoElement: '::view-transition-new(root)' },
+			);
+		});
+	});
+</script>
