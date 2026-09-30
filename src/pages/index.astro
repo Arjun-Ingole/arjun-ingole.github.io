@@ -5,6 +5,7 @@ import HoverCard from '../components/HoverCard.astro';
 import TechIcon from '../components/TechIcon.astro';
 import NowPlaying from '../components/NowPlaying.astro';
 import ContribGraph from '../components/ContribGraph.astro';
+import BannerShader from '../components/BannerShader.astro';
 import { site, links, work, projects, earlier } from '../data/site';
 import { getPosts, fmtDate } from '../lib/posts';
 import avatar from '../assets/avatar.jpg';
@@ -19,9 +20,10 @@ const card = { width: 300, height: 300, borderWidth: 6, shape: 'squircle' as con
 
 <Base>
 	<section class="intro stagger" style="--d:60ms">
+		<BannerShader class="hero-banner" alt="A retro desk: a beige IBM PC, Monkey Island boxes and a boombox" />
 		<div class="who">
-			<Image class="avatar" src={avatar} alt="Arjun" width={96} height={96} loading="eager" />
-			<div>
+			<Image class="avatar" src={avatar} alt="Arjun" width={176} height={176} loading="eager" />
+			<div class="who-text">
 				<h1 class="name display">Arjun Ingole</h1>
 				<p class="role"><HoverCard {...card} map={{ lat: 12.9716, lng: 77.5946, zoom: 11, label: 'bengaluru · © openfreemap © openstreetmap' }}>bengaluru</HoverCard>, india</p>
 			</div>
@@ -115,10 +117,22 @@ const card = { width: 300, height: 300, borderWidth: 6, shape: 'squircle' as con
 </Base>
 
 <style>
-	.who { display: flex; align-items: center; gap: .85rem; margin-bottom: 1.25rem; }
-	.avatar { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; }
-	.name { margin: 0; font-size: 1.6rem; line-height: 1.1; letter-spacing: -.01em; }
-	.role { margin: .1rem 0 0; color: var(--ink-2); }
+	/* the banner reaches 20px past the text column on each side */
+	.intro :global(.hero-banner) {
+		--bleed: 20px;
+		width: calc(100% + var(--bleed) * 2);
+		margin-inline: calc(var(--bleed) * -1);
+	}
+	/* x-profile layout: avatar straddles the banner's bottom edge,
+	   name + location stack underneath, all on the text column's left edge */
+	.who { position: relative; z-index: 1; margin: -44px 0 1.4rem; }
+	.avatar {
+		display: block; width: 88px; height: 88px; border-radius: 20px; object-fit: cover;
+		box-shadow: 0 0 0 4px var(--bg);
+	}
+	.who-text { margin-top: .75rem; }
+	.name { margin: 0; font-size: 1.75rem; line-height: 1.1; letter-spacing: -.01em; }
+	.role { margin: .2rem 0 0; color: var(--ink-2); }
 
 	.intro p { margin: 0 0 .75rem; color: var(--ink-2); text-wrap: pretty; }
 	.intro p:last-child { margin-bottom: 0; }
